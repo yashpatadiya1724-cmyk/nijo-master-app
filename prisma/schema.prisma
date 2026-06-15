@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  phone          String?   @unique
+  email          String?   @unique
+  name           String?
+  language       String    @default("hin")
+  isPlus         Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  messages       Message[]
+  journals       Journal[]
+  moods          Mood[]
+  memories       Memory[]
+}
+
+model Message {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  role           String    // "USER" or "ASSISTANT"
+  content        String
+  createdAt      DateTime  @default(now())
+}
+
+model Journal {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  title          String?
+  content        String
+  aiSummary      String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Mood {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  score          Int       // 1-5 scale
+  tags           String    // JSON stringified array of tags
+  note           String?
+  createdAt      DateTime  @default(now())
+}
+
+model Memory {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  fact           String    // e.g. "User struggles with work stress"
+  createdAt      DateTime  @default(now())
+}
+
+

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Nijo</string>
+    <string name="title_activity_main">Nijo</string>
+    <string name="package_name">com.nijo.app</string>
+    <string name="custom_url_scheme">com.nijo.app</string>
+</resources>
