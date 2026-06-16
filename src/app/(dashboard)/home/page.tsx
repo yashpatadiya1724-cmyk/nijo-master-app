@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MessageCircle, Edit3, Smile, User } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function HomePage() {
@@ -9,79 +9,71 @@ export default function HomePage() {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
+      transition: { staggerChildren: 0.1 }
     }
   };
 
   const item = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     show: { opacity: 1, y: 0 }
   };
 
   return (
-    <div className="flex flex-col min-h-full bg-[var(--surface-2)] md:bg-transparent px-6 pt-12 transition-colors duration-300">
+    <div className="flex flex-col min-h-full bg-[var(--background)] px-6 pt-12 pb-24 font-sans">
       <motion.div 
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-center mb-6"
+        className="mb-8"
       >
-        <div>
-          <h1 className="font-sans font-bold text-[32px] text-[var(--text-primary)] leading-tight">Good morning,<br/>Yash</h1>
-        </div>
-        <Link href="/profile" className="md:hidden w-12 h-12 rounded-full bg-[var(--surface-1)] shadow-sm border border-[var(--border-color)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--primary-start)] transition-colors">
-          <User size={24} />
-        </Link>
+        <p className="text-[18px] text-[var(--text-secondary)] font-medium mb-1">Good evening,</p>
+        <h1 className="font-semibold text-[32px] text-[var(--text-primary)] leading-tight">Yash</h1>
       </motion.div>
-      <motion.p 
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-        className="text-[var(--text-secondary)] text-[16px] mb-8"
+
+      <motion.div 
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
+        className="mb-8"
       >
-        What do you need today?
-      </motion.p>
+        <h2 className="text-[20px] font-semibold text-[var(--text-primary)] mb-2">How are you feeling?</h2>
+        <p className="text-[15px] text-[var(--text-secondary)]">
+          Nijo is here to listen, whenever you need it. आज कैसा महसूस हो रहा है?
+        </p>
+      </motion.div>
 
       <motion.div 
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        className="space-y-4"
       >
+        {/* Wide Tile: Talk to Nijo */}
         <motion.div variants={item}>
-          <Link href="/chat" className="bg-[var(--surface-1)] p-5 rounded-[24px] flex items-center md:flex-col md:text-center md:justify-center md:py-8 gap-4 shadow-sm border border-[var(--border-color)] transition-all hover:scale-[1.02] hover:shadow-md hover:border-[var(--primary-start)]/50 group block">
-            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-[var(--primary-start)]/10 flex items-center justify-center text-[var(--primary-start)] group-hover:bg-[var(--primary-start)] group-hover:text-white transition-colors">
-              <MessageCircle size={24} className="md:w-8 md:h-8" />
+          <Link href="/chat" className="bg-[var(--surface-warm)] p-5 rounded-[24px] flex items-center justify-between shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98]">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-[var(--companion)]" />
+              </div>
+              <h3 className="font-semibold text-[18px] text-[var(--text-primary)]">Talk to Nijo</h3>
             </div>
-            <div>
-              <h3 className="font-bold text-[18px] text-[var(--text-primary)]">Talk to Nijo</h3>
-              <p className="text-[14px] text-[var(--text-secondary)] mt-1">Vent or reflect without judgment</p>
-            </div>
+            <ChevronRight className="text-[var(--text-secondary)]" size={20} />
           </Link>
         </motion.div>
 
-        <motion.div variants={item}>
-          <Link href="/mood" className="bg-[var(--surface-1)] p-5 rounded-[24px] flex items-center md:flex-col md:text-center md:justify-center md:py-8 gap-4 shadow-sm border border-[var(--border-color)] transition-all hover:scale-[1.02] hover:shadow-md hover:border-blue-500/50 group block">
-            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-colors">
-              <Smile size={24} className="md:w-8 md:h-8" />
-            </div>
-            <div>
-              <h3 className="font-bold text-[18px] text-[var(--text-primary)]">Log Mood</h3>
-              <p className="text-[14px] text-[var(--text-secondary)] mt-1">Track how you are feeling</p>
-            </div>
-          </Link>
-        </motion.div>
+        {/* Square Tiles Row */}
+        <div className="flex gap-4">
+          <motion.div variants={item} className="flex-1">
+            <Link href="/journal" className="bg-[var(--surface-warm)] p-5 rounded-[24px] flex flex-col items-start gap-8 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] h-full">
+              <div className="w-10 h-10 rounded-[12px] bg-white" />
+              <h3 className="font-semibold text-[16px] text-[var(--text-primary)]">Journal</h3>
+            </Link>
+          </motion.div>
 
-        <motion.div variants={item}>
-          <Link href="/journal" className="bg-[var(--surface-1)] p-5 rounded-[24px] flex items-center md:flex-col md:text-center md:justify-center md:py-8 gap-4 shadow-sm border border-[var(--border-color)] transition-all hover:scale-[1.02] hover:shadow-md hover:border-[var(--success)]/50 group block">
-            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-[var(--success)]/10 flex items-center justify-center text-[var(--success)] group-hover:bg-[var(--success)] group-hover:text-white transition-colors">
-              <Edit3 size={24} className="md:w-8 md:h-8" />
-            </div>
-            <div>
-              <h3 className="font-bold text-[18px] text-[var(--text-primary)]">Journal</h3>
-              <p className="text-[14px] text-[var(--text-secondary)] mt-1">Write down your thoughts privately</p>
-            </div>
-          </Link>
-        </motion.div>
+          <motion.div variants={item} className="flex-1">
+            <Link href="/mood" className="bg-[var(--surface-warm)] p-5 rounded-[24px] flex flex-col items-start gap-8 shadow-sm transition-all hover:scale-[1.02] active:scale-[0.98] h-full">
+              <div className="w-10 h-10 rounded-[12px] bg-white" />
+              <h3 className="font-semibold text-[16px] text-[var(--text-primary)]">Mood</h3>
+            </Link>
+          </motion.div>
+        </div>
       </motion.div>
     </div>
   );

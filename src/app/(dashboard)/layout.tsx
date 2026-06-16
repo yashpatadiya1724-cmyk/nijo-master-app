@@ -1,27 +1,20 @@
 import { ReactNode } from "react";
-import { Sidebar } from "@/components/Sidebar";
 import { BottomNav } from "@/components/BottomNav";
 import { PageWrapper } from "@/components/PageWrapper";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-screen bg-[var(--background)] overflow-hidden transition-colors duration-300">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block w-64 flex-shrink-0 z-10 shadow-lg">
-        <Sidebar />
-      </div>
-
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto relative pb-16 md:pb-0">
-        <div className="max-w-4xl mx-auto h-full w-full bg-[var(--background)] md:border-x border-[var(--border-color)] shadow-sm flex flex-col relative overflow-x-hidden">
+    <div className="flex justify-center h-[100dvh] bg-[var(--surface-warm)] overflow-hidden transition-colors duration-300">
+      {/* Main Content Area - Mobile restricted width for desktop */}
+      <main className="w-full max-w-md h-full bg-[var(--background)] shadow-2xl flex flex-col relative overflow-hidden">
+        <div className="flex-1 overflow-y-auto pb-16">
           <PageWrapper>
             {children}
           </PageWrapper>
         </div>
+        {/* Mobile Bottom Navigation */}
+        <BottomNav />
       </main>
-
-      {/* Mobile Bottom Navigation */}
-      <BottomNav />
     </div>
   );
 }
