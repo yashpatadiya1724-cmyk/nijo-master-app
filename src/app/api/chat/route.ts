@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   const systemPrompt = `You are Nijo, a warm, empathetic, and non-judgmental AI companion designed for emotional wellness. Respond in a brief, calming manner. Never give medical advice.${memoryContext}`;
 
   const result = streamText({
-    model: groq('llama3-8b-8192'),
+    model: groq('llama-3.1-8b-instant'),
     system: systemPrompt,
     messages,
     async onFinish({ text }) {

@@ -5,39 +5,45 @@ import { prisma } from "./prisma";
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Phone OTP",
+      name: "OTP",
       credentials: {
-        phone: { label: "Phone", type: "text" },
+        identifier: { label: "Phone or Email", type: "text" },
         otp: { label: "OTP", type: "text" }
       },
       async authorize(credentials) {
-        if (!credentials?.phone) return null;
+        if (!credentials?.identifier || !credentials?.otp) return null;
         
         // Mock OTP validation - for production this would verify against Twilio/Firebase
-        if (credentials.otp !== "492") {
+        if (credentials.otp !== "123456") {
            // Reject if not our mock code
            return null;
         }
 
+        const isEmail = credentials.identifier.includes('@');
+        const searchCriteria = isEmail 
+          ? { email: credentials.identifier } 
+          : { phone: credentials.identifier };
+
         // Find or create user
         let user = await prisma.user.findUnique({
-          where: { phone: credentials.phone }
+          where: searchCriteria as any
         });
 
         if (!user) {
           user = await prisma.user.create({
             data: {
-              phone: credentials.phone,
+              ...searchCriteria,
               name: "New User"
-            }
+            } as any
           });
         }
 
         return {
           id: user.id,
           name: user.name,
+          email: user.email,
           phone: user.phone
-        };
+        } as any;
       }
     })
   ],

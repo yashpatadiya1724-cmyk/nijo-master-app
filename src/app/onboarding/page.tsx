@@ -7,6 +7,7 @@ import { Check, Lock, ChevronLeft } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { CareCard } from '@/components/ui/CareCard'
+import { signIn } from 'next-auth/react'
 
 const STEPS = ['splash', 'welcome', 'verify', 'language', 'privacy', 'disclaimer']
 
@@ -21,6 +22,10 @@ export default function OnboardingPage() {
   const router = useRouter()
   const [stepIndex, setStepIndex] = useState(0)
   const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [loginType, setLoginType] = useState<'phone'|'email'>('phone')
+  const [otp, setOtp] = useState(['', '', '', '', '', ''])
+  const [isLoading, setIsLoading] = useState(false)
   const [language, setLanguage] = useState('hin')
 
   useEffect(() => {
@@ -33,6 +38,55 @@ export default function OnboardingPage() {
   const next = () => {
     if (stepIndex < STEPS.length - 1) setStepIndex(s => s + 1)
     else finish()
+  }
+
+  const handleSendOtp = async () => {
+    const identifier = loginType === 'phone' ? phone : email
+    if (!identifier) return
+
+    setIsLoading(true)
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier })
+      })
+      if (res.ok) {
+        next()
+      } else {
+        alert('Failed to send OTP')
+      }
+    } catch (e) {
+      alert('Error sending OTP')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleVerifyOtp = async () => {
+    const otpString = otp.join('')
+    if (otpString.length < 6) return // Require 6 digit OTP
+    
+    setIsLoading(true)
+    const identifier = loginType === 'phone' ? phone : email
+    
+    try {
+      const result = await signIn('credentials', {
+        identifier,
+        otp: otpString,
+        redirect: false
+      })
+      
+      if (result?.error) {
+        alert('Invalid OTP. Please try again.')
+      } else {
+        next()
+      }
+    } catch (e) {
+      alert('Error verifying OTP')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const finish = () => {
@@ -104,24 +158,36 @@ export default function OnboardingPage() {
               </div>
             </div>
             
-            <h2 className="font-sans font-bold text-[34px] tracking-tight leading-tight text-[#1C1A17] mb-3">Hi, I'm Nijo.</h2>
+            <h2 className="font-sans font-bold text-[34px] tracking-tight leading-tight text-[#1C1A17] mb-3">Hi, I&apos;m Nijo.</h2>
             <p className="text-[#847F78] text-[18px] leading-[1.4] mb-auto font-normal pr-4">
               A calm space to talk, reflect,<br/>and feel a little lighter —<br/>whenever you need it.
             </p>
 
-            <div className="flex items-center w-full mb-5 mt-8 h-[60px] bg-white rounded-2xl border border-[#EBE8E3] relative px-5">
-              <span className="font-medium text-[#1C1A17] text-[16px]">+91</span>
-              <div className="w-px h-6 bg-[#EBE8E3] mx-4"></div>
-              <input 
-                className="w-full h-full bg-transparent border-none focus:outline-none font-normal text-[16px] placeholder:text-[#A39E98] text-[#1C1A17]" 
-                placeholder="Phone number" 
-                value={phone} 
-                onChange={e => setPhone(e.target.value)} 
-              />
-            </div>
+            {loginType === 'phone' ? (
+              <div className="flex items-center w-full mb-5 mt-8 h-[60px] bg-white rounded-2xl border border-[#EBE8E3] relative px-5">
+                <span className="font-medium text-[#1C1A17] text-[16px]">+91</span>
+                <div className="w-px h-6 bg-[#EBE8E3] mx-4"></div>
+                <input 
+                  className="w-full h-full bg-transparent border-none focus:outline-none font-normal text-[16px] placeholder:text-[#A39E98] text-[#1C1A17]" 
+                  placeholder="Phone number" 
+                  value={phone} 
+                  onChange={e => setPhone(e.target.value)} 
+                />
+              </div>
+            ) : (
+              <div className="flex items-center w-full mb-5 mt-8 h-[60px] bg-white rounded-2xl border border-[#EBE8E3] relative px-5">
+                <input 
+                  className="w-full h-full bg-transparent border-none focus:outline-none font-normal text-[16px] placeholder:text-[#A39E98] text-[#1C1A17]" 
+                  placeholder="Email address" 
+                  type="email"
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                />
+              </div>
+            )}
 
-            <button className="w-full h-[60px] text-[17px] mb-6 rounded-full font-semibold bg-[#ED752A] text-white shadow-[0_4px_14px_rgba(237,117,42,0.3)] transition-transform hover:scale-[1.02] active:scale-95" onClick={next}>
-              Continue
+            <button disabled={isLoading} className="w-full h-[60px] text-[17px] mb-6 rounded-full font-semibold bg-[#ED752A] text-white shadow-[0_4px_14px_rgba(237,117,42,0.3)] transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-50" onClick={handleSendOtp}>
+              {isLoading ? 'Sending...' : 'Continue'}
             </button>
             
             <div className="flex items-center w-full mb-6 px-2">
@@ -130,8 +196,8 @@ export default function OnboardingPage() {
               <div className="flex-1 h-px bg-[#EBE8E3]"></div>
             </div>
             
-            <button className="w-full h-[60px] text-[17px] bg-white rounded-full font-semibold border border-[#EBE8E3] text-[#1C1A17] mb-6 transition-transform hover:scale-[1.02] active:scale-95 hover:bg-gray-50" onClick={next}>
-              Continue with email
+            <button className="w-full h-[60px] text-[17px] bg-white rounded-full font-semibold border border-[#EBE8E3] text-[#1C1A17] mb-6 transition-transform hover:scale-[1.02] active:scale-95 hover:bg-gray-50" onClick={() => setLoginType(loginType === 'phone' ? 'email' : 'phone')}>
+              Continue with {loginType === 'phone' ? 'email' : 'phone'}
             </button>
           </motion.div>
         )}
@@ -146,27 +212,63 @@ export default function OnboardingPage() {
             </div>
 
             <h2 className="font-sans font-bold text-[34px] tracking-tight leading-tight text-[#1C1A17] mb-2">Enter the code</h2>
-            <p className="text-[#847F78] text-[18px] mb-0.5 font-normal">We sent a 6-digit code to</p>
-            <p className="font-semibold text-[#1C1A17] text-[18px] tracking-wide mb-10">+91 98765 •• 210</p>
+            <p className="text-[#847F78] text-[18px] mb-0.5 font-normal">We sent a code to</p>
+            <p className="font-semibold text-[#1C1A17] text-[18px] tracking-wide mb-10">{loginType === 'phone' ? `+91 ${phone}` : email}</p>
             
             <div className="flex gap-[8px] justify-between mb-8">
-              {['4', '9', '2', '', '', ''].map((val, i) => {
-                const isActive = i === 0;
+              {otp.map((val, i) => {
+                const isActive = i === otp.findIndex(v => v === '') && !val;
                 return (
-                  <div key={i} className={`w-[44px] h-[64px] rounded-full flex flex-col items-center justify-center font-bold text-[26px] text-[#1C1A17] bg-white border-[1.5px] ${isActive ? 'border-[#ED752A]' : 'border-[#EBE8E3]'}`}>
-                    {val}
-                    {i === 3 && <div className="w-px h-6 bg-[#A39E98] animate-pulse" />}
-                  </div>
+                  <input key={i} 
+                    id={`otp-${i}`}
+                    type="text"
+                    maxLength={1}
+                    value={val}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, '');
+                      if (!value) {
+                        const newOtp = [...otp];
+                        newOtp[i] = '';
+                        setOtp(newOtp);
+                        return;
+                      }
+                      const newOtp = [...otp];
+                      newOtp[i] = value[value.length - 1];
+                      setOtp(newOtp);
+                      if (i < 5) {
+                        document.getElementById(`otp-${i+1}`)?.focus();
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Backspace' && !val && i > 0) {
+                        document.getElementById(`otp-${i-1}`)?.focus();
+                      }
+                    }}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                      if (pastedData) {
+                        const newOtp = [...otp];
+                        for (let j = 0; j < pastedData.length; j++) {
+                          if (i + j < 6) newOtp[i + j] = pastedData[j];
+                        }
+                        setOtp(newOtp);
+                        const nextFocusIndex = Math.min(i + pastedData.length, 5);
+                        document.getElementById(`otp-${nextFocusIndex}`)?.focus();
+                      }
+                    }}
+                    className={`w-[44px] h-[64px] rounded-full flex flex-col items-center justify-center font-bold text-[26px] text-center text-[#1C1A17] bg-white border-[1.5px] focus:outline-none focus:border-[#ED752A] transition-colors ${isActive ? 'border-[#ED752A]' : 'border-[#EBE8E3]'}`}
+                  />
                 )
               })}
             </div>
 
             <p className="text-[16px] text-[#847F78] mb-auto font-normal">
-              Didn't get it? <span className="text-[#ED752A] cursor-pointer font-medium">Resend in 0:24</span>
+              Didn&apos;t get it? <span className="text-[#ED752A] cursor-pointer font-medium" onClick={handleSendOtp}>Resend code</span>
             </p>
 
-            <button className="w-full h-[60px] text-[17px] mb-6 rounded-full font-semibold bg-[#ED752A] text-white shadow-[0_4px_14px_rgba(237,117,42,0.3)] mt-auto transition-transform hover:scale-[1.02] active:scale-95" onClick={next}>
-              Verify
+            <button disabled={isLoading} className="w-full h-[60px] text-[17px] mb-6 rounded-full font-semibold bg-[#ED752A] text-white shadow-[0_4px_14px_rgba(237,117,42,0.3)] mt-auto transition-transform hover:scale-[1.02] active:scale-95 disabled:opacity-50" onClick={handleVerifyOtp}>
+              {isLoading ? 'Verifying...' : 'Verify'}
             </button>
           </motion.div>
         )}
@@ -261,7 +363,7 @@ export default function OnboardingPage() {
           >
             <h2 className="font-sans font-bold text-[34px] tracking-tight leading-[1.15] text-[#1C1A17] mb-4 mt-6">Nijo is a companion,<br/>not a clinic</h2>
             <p className="text-[#847F78] text-[18px] mb-10 leading-[1.4] pr-2">
-              Nijo is here to listen and help you<br/>reflect. It isn't a doctor or<br/>therapist, and can't give medical<br/>advice.
+              Nijo is here to listen and help you<br/>reflect. It isn&apos;t a doctor or<br/>therapist, and can&apos;t give medical<br/>advice.
             </p>
 
             <div className="w-full bg-[#FCF0EE] border border-[#F6DFDC] rounded-[28px] p-6 mb-auto flex flex-col shadow-sm">
