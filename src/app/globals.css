@@ -1,13 +1,26 @@
 @import "tailwindcss";
 
 :root {
-  --background: #EBE1D2;
+  --background: #FFF6F0; /* Light beige/cream to match the original */
   --foreground: #2C2622;
   --surface-1: #FFFFFF;
-  --surface-2: #FFF6F0;
+  --surface-2: #F5EAE1;
   --text-primary: #2C2622;
   --text-secondary: #666666;
   --border-color: #E5E7EB;
+  --primary-start: #FF4D1C;
+  --primary-end: #F5A623;
+  --success: #10B981;
+}
+
+.dark {
+  --background: #111111; /* Deep dark background */
+  --foreground: #F5F5F5;
+  --surface-1: #1C1C1C;
+  --surface-2: #242424;
+  --text-primary: #F5F5F5;
+  --text-secondary: #A0A0A0;
+  --border-color: #333333;
   --primary-start: #FF4D1C;
   --primary-end: #F5A623;
   --success: #10B981;
@@ -32,4 +45,18 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Base custom utilities */
+.glass-effect {
+  @apply bg-surface-1/80 backdrop-blur-md border border-border-color/50;
+}
+
+.brand-gradient-text {
+  @apply bg-gradient-to-r from-primary-start to-primary-end bg-clip-text text-transparent;
+}
+
+.brand-gradient-bg {
+  @apply bg-gradient-to-br from-primary-start to-primary-end text-white;
 }

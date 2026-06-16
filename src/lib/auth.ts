@@ -1,28 +1,37 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "./prisma";
+import { adminAuth } from "./firebase-admin";
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
     CredentialsProvider({
-      name: "OTP",
+      name: "Firebase",
       credentials: {
-        identifier: { label: "Phone or Email", type: "text" },
-        otp: { label: "OTP", type: "text" }
+        firebaseToken: { label: "Firebase Token", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.identifier || !credentials?.otp) return null;
+        if (!credentials?.firebaseToken) return null;
         
-        // Mock OTP validation - for production this would verify against Twilio/Firebase
-        if (credentials.otp !== "123456") {
-           // Reject if not our mock code
-           return null;
+        let decodedToken;
+        try {
+          decodedToken = await adminAuth.verifyIdToken(credentials.firebaseToken);
+        } catch (error) {
+          console.error("Firebase token verification failed:", error);
+          return null;
         }
 
-        const isEmail = credentials.identifier.includes('@');
-        const searchCriteria = isEmail 
-          ? { email: credentials.identifier } 
-          : { phone: credentials.identifier };
+        const email = decodedToken.email;
+        const phone = decodedToken.phone_number; // Firebase stores it with + country code
+
+        if (!email && !phone) return null;
+
+        const searchCriteria = email ? { email } : { phone };
 
         // Find or create user
         let user = await prisma.user.findUnique({
@@ -51,6 +60,32 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user.email) {
+        let dbUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        });
+
+        if (!dbUser) {
+          dbUser = await prisma.user.create({
+            data: {
+              email: user.email,
+              name: user.name || "Google User"
+            }
+          });
+        }
+        
+        // Map database ID to the user object so the jwt callback receives it
+        user.id = dbUser.id;
+      }
+      return true;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (session.user && token.sub) {
         (session.user as any).id = token.sub;

@@ -15,7 +15,7 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-[var(--border-color)] flex items-center justify-around md:hidden px-2 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 h-16 bg-[var(--surface-1)] border-t border-[var(--border-color)] flex items-center justify-around md:hidden px-2 pb-safe z-50 transition-colors duration-300">
       {NAV_ITEMS.map((item) => {
         const isActive = pathname.startsWith(item.href);
         return (
@@ -26,7 +26,7 @@ export function BottomNav() {
               isActive ? "text-[var(--primary-start)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             }`}
           >
-            <item.icon size={20} />
+            <item.icon size={20} className={isActive ? "scale-110 transition-transform" : "transition-transform"} />
             <span className="text-[10px] font-medium">{item.label}</span>
           </Link>
         );
