@@ -131,7 +131,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--background)] transition-colors duration-300">
-      <div className="w-full max-w-[360px] h-[100dvh] md:h-[740px] md:rounded-[40px] md:shadow-2xl md:border border-[var(--border-color)] overflow-hidden relative flex flex-col bg-[var(--surface-1)]">
+      <div className="w-full h-[100dvh] overflow-hidden relative flex flex-col bg-[var(--surface-1)]">
         <AnimatePresence mode="wait">
         
         {step === 'splash' && (
@@ -141,29 +141,25 @@ export default function OnboardingPage() {
           >
             <div className="mb-6 relative flex items-center justify-center">
               <div className="w-[140px] h-[140px] brand-gradient-bg rounded-[40px] shadow-lg flex items-center justify-center">
-                <svg width="60%" height="60%" viewBox="0 0 100 100" fill="none" stroke="#ffffff" strokeWidth="5" strokeLinejoin="miter" strokeLinecap="square">
-                  <path d="M 50 15 L 50 45 L 85 45 L 75 55 L 15 55 L 25 45 Z" />
-                  <path d="M 50 85 L 50 55 L 15 55 L 25 45 L 85 45 L 75 55 Z" />
-                  <path d="M 15 45 L 85 45 M 15 55 L 85 55 M 50 15 L 50 85" strokeWidth="5" />
+                <svg width="60%" height="60%" viewBox="0 0 100 100" fill="none" stroke="#ffffff" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round">
+                  <path d="M 20 50 L 80 50 M 50 25 L 50 75 M 50 25 L 30 50 M 50 75 L 70 50" />
                 </svg>
               </div>
             </div>
-            <h1 className="font-sans font-extrabold text-[44px] tracking-tight text-[var(--primary-start)] mb-0 mt-4">Nijo</h1>
-            <p className="text-[var(--text-secondary)] font-medium text-[17px] tracking-wide mt-1">your quiet companion</p>
+            <h1 className="font-sans font-extrabold text-[44px] tracking-tight text-[#48807C] dark:text-[#5BA39E] mb-0 mt-4">Nijo</h1>
+            <p className="text-[#A3A3A3] font-medium text-[17px] tracking-wide mt-1">your quiet companion</p>
           </motion.div>
         )}
 
         {step === 'welcome' && (
           <motion.div key="welcome"
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative md:rounded-[40px]"
+            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative"
           >
             <div className="mb-6 mt-2 relative">
               <div className="w-[72px] h-[72px] brand-gradient-bg rounded-[22px] shadow-md flex items-center justify-center">
-                <svg width="60%" height="60%" viewBox="0 0 100 100" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinejoin="miter" strokeLinecap="square">
-                  <path d="M 50 15 L 50 45 L 85 45 L 75 55 L 15 55 L 25 45 Z" />
-                  <path d="M 50 85 L 50 55 L 15 55 L 25 45 L 85 45 L 75 55 Z" />
-                  <path d="M 15 45 L 85 45 M 15 55 L 85 55 M 50 15 L 50 85" strokeWidth="6" />
+                <svg width="60%" height="60%" viewBox="0 0 100 100" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinejoin="round" strokeLinecap="round">
+                  <path d="M 20 50 L 80 50 M 50 25 L 50 75 M 50 25 L 30 50 M 50 75 L 70 50" />
                 </svg>
               </div>
             </div>
@@ -232,7 +228,7 @@ export default function OnboardingPage() {
         {step === 'verify' && (
           <motion.div key="verify"
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative md:rounded-[40px]"
+            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative"
           >
             <div className="w-[44px] h-[44px] bg-[var(--surface-2)] rounded-full flex items-center justify-center border border-[var(--border-color)] cursor-pointer mb-8 text-[var(--text-primary)] hover:bg-[var(--border-color)] transition-colors" onClick={() => setStepIndex(1)}>
               <ChevronLeft size={20} strokeWidth={2} className="-ml-0.5" />
@@ -303,7 +299,7 @@ export default function OnboardingPage() {
         {step === 'language' && (
           <motion.div key="language"
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="w-full max-w-[360px] h-[740px] bg-[var(--surface-1)] p-8 pt-24 md:rounded-[40px] flex flex-col text-left relative"
+            className="w-full h-[740px] bg-[var(--surface-1)] p-8 pt-24 flex flex-col text-left relative"
           >
             <StatusBar />
             <h2 className="font-sans font-bold text-[32px] leading-tight text-[var(--text-primary)] mb-3 mt-4">Choose your<br/>language</h2>
@@ -337,7 +333,7 @@ export default function OnboardingPage() {
         {step === 'privacy' && (
           <motion.div key="privacy"
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative md:rounded-[40px]"
+            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative"
           >
             <div className="w-[72px] h-[72px] bg-[var(--surface-2)] rounded-[22px] flex items-center justify-center mb-6 mt-4 border border-[var(--border-color)] shadow-sm">
               <Lock className="text-[var(--primary-start)] w-8 h-8" strokeWidth={2.5} />
@@ -386,7 +382,7 @@ export default function OnboardingPage() {
         {step === 'disclaimer' && (
           <motion.div key="disclaimer"
             initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative md:rounded-[40px]"
+            className="w-full h-full bg-[var(--surface-1)] p-8 pt-20 flex flex-col text-left relative"
           >
             <h2 className="font-sans font-bold text-[34px] tracking-tight leading-[1.15] text-[var(--text-primary)] mb-4 mt-6">Nijo is a companion,<br/>not a clinic</h2>
             <p className="text-[var(--text-secondary)] text-[18px] mb-10 leading-[1.4] pr-2">
